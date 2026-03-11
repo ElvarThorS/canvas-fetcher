@@ -276,13 +276,13 @@ Even with correct token and scopes:
 
 ## 24) Suggested Local Storage Layout
 Example:
-- `/home/elvar/Documents/School/Canvas/<course_id>_<course_name>/raw/course.json`
-- `/home/elvar/Documents/School/Canvas/<course_id>_<course_name>/raw/modules.json`
-- `/home/elvar/Documents/School/Canvas/<course_id>_<course_name>/raw/module_items_<module_id>.json` (if needed)
-- `/home/elvar/Documents/School/Canvas/<course_id>_<course_name>/raw/assignments.json`
-- `/home/elvar/Documents/School/Canvas/<course_id>_<course_name>/raw/pages.json`
-- `/home/elvar/Documents/School/Canvas/<course_id>_<course_name>/raw/files.json`
-- `/home/elvar/Documents/School/Canvas/<course_id>_<course_name>/files/<file_id>_<filename>`
+- `<out_dir>/<course_id>_<course_name>/raw/course.json`
+- `<out_dir>/<course_id>_<course_name>/raw/modules.json`
+- `<out_dir>/<course_id>_<course_name>/raw/module_items_<module_id>.json` (if needed)
+- `<out_dir>/<course_id>_<course_name>/raw/assignments.json`
+- `<out_dir>/<course_id>_<course_name>/raw/pages.json`
+- `<out_dir>/<course_id>_<course_name>/raw/files.json`
+- `<out_dir>/<course_id>_<course_name>/files/<file_id>_<filename>`
 
 Keep both:
 - Original API payloads (for traceability)
@@ -321,7 +321,7 @@ python canvas_fetcher.py --base-url "https://reykjavik.instructure.com" --course
 
 ## 27) Saved Config File for One-Command Multi-Course Sync
 Saved config path:
-- `/home/elvar/Documents/Projects/canvas-fetcher/courses.json`
+- `<project_dir>/courses.json` (or any path set via environment)
 
 Current file content:
 
@@ -345,10 +345,10 @@ Notes:
 - You can still override/add course IDs at runtime by repeating `--course-id`.
 
 ## 28) Local Save Path Preference
-Configured default output directory for this project:
-- `/home/elvar/Documents/School/Canvas`
-
-So running the script without `--out-dir` will save course backups there.
+Default output behavior:
+- Script default fallback is `backup/`.
+- You can set an environment override in `.env` with `CANVAS_FETCHER_OUT_DIR`.
+- CLI flag `--out-dir` takes priority over environment settings.
 
 Folder naming rule:
 - Each course folder now includes both ID and course name, for example `10053_Intro-to-Biology`.
@@ -356,7 +356,7 @@ Folder naming rule:
 
 ## 29) Project-Only Token Setup
 Project token file path:
-- `/home/elvar/Documents/Projects/canvas-fetcher/.env`
+- `<project_dir>/.env`
 
 Expected format:
 
@@ -367,6 +367,7 @@ CANVAS_TOKEN="<your_canvas_access_token>"
 Notes:
 - This keeps the token local to this project workflow.
 - `canvas_fetcher.py` will auto-read `.env` from the current directory or script directory if `CANVAS_TOKEN` is not already set in the shell.
+- You can also keep local paths out of Git by setting `CANVAS_FETCHER_OUT_DIR` and `CANVAS_FETCHER_SAVED_CONFIG` in `.env`.
 
 ## 30) Structured Assignment and Module Exports
 Per-course folder now includes human-browsable exports in addition to raw API JSON:

@@ -37,7 +37,10 @@ DEFAULT_TIMEOUT = 30.0
 DEFAULT_RETRIES = 5
 DEFAULT_PER_PAGE = 100
 DEFAULT_TOKEN_ENV = "CANVAS_TOKEN"
-DEFAULT_OUT_DIR = "/home/elvar/Documents/School/Canvas"
+DEFAULT_OUT_DIR = "backup"
+DEFAULT_SAVED_CONFIG = "courses.json"
+ENV_OUT_DIR = "CANVAS_FETCHER_OUT_DIR"
+ENV_SAVED_CONFIG = "CANVAS_FETCHER_SAVED_CONFIG"
 USER_AGENT = "canvas-fetcher/0.1"
 DEFAULT_CHANGE_ID_LIMIT = 200
 HTML_URL_ATTRIBUTES = {
@@ -548,6 +551,14 @@ def resolve_token(
     )
 
 
+def resolve_setting_from_env_files(key: str, env_file_candidates: list[Path]) -> str | None:
+    for candidate in env_file_candidates:
+        value = read_env_value_from_file(candidate, key)
+        if value:
+            return value
+    return None
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Fetch Canvas course data and save it locally."
@@ -569,8 +580,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--saved-config",
-        default="courses.json",
-        help="Path to saved course config JSON (default: courses.json)",
+        default=None,
+        help=(
+            "Path to saved course config JSON "
+            f"(default: {DEFAULT_SAVED_CONFIG}, env: {ENV_SAVED_CONFIG})"
+        ),
     )
     parser.add_argument(
         "--token",
@@ -583,8 +597,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--out-dir",
-        default=DEFAULT_OUT_DIR,
-        help=(f"Directory where backups are written (default: {DEFAULT_OUT_DIR})"),
+        default=None,
+        help=(
+            "Directory where backups are written "
+            f"(default: {DEFAULT_OUT_DIR}, env: {ENV_OUT_DIR})"
+        ),
     )
     parser.add_argument(
         "--per-page",
@@ -1631,6 +1648,21 @@ def main() -> int:
         args.token_env,
         env_file_candidates=deduped_candidates,
     )
+
+    resolved_out_dir = (
+        args.out_dir
+        or os.getenv(ENV_OUT_DIR)
+        or resolve_setting_from_env_files(ENV_OUT_DIR, deduped_candidates)
+        or DEFAULT_OUT_DIR
+    )
+    resolved_saved_config = (
+        args.saved_config
+        or os.getenv(ENV_SAVED_CONFIG)
+        or resolve_setting_from_env_files(ENV_SAVED_CONFIG, deduped_candidates)
+        or DEFAULT_SAVED_CONFIG
+    )
+    args.out_dir = resolved_out_dir
+    args.saved_config = resolved_saved_config
 
     saved_config_path = resolve_saved_config_path(args.saved_config)
     saved_base_url: str | None = None

@@ -31,17 +31,23 @@ Set your token in env:
 export CANVAS_TOKEN="<your_canvas_access_token>"
 ```
 
-Project-only option (auto-loaded):
+Project-only option (auto-loaded, recommended):
 
 Copy `Documents/Projects/canvas-fetcher/.env.example` to `.env` and set your token:
 
 ```bash
 CANVAS_TOKEN="<your_canvas_access_token>"
+CANVAS_FETCHER_OUT_DIR="/absolute/path/for/backups"
+CANVAS_FETCHER_SAVED_CONFIG="/absolute/path/to/courses.json"
 ```
 
 If `CANVAS_TOKEN` is not set in your shell, the script automatically checks `.env` in:
 - your current working directory
 - the script directory (`Documents/Projects/canvas-fetcher`)
+
+The script also reads these optional path settings from shell env or `.env`:
+- `CANVAS_FETCHER_OUT_DIR` (default fallback: `backup`)
+- `CANVAS_FETCHER_SAVED_CONFIG` (default fallback: `courses.json`)
 
 Run a course backup:
 
@@ -111,10 +117,10 @@ python canvas_fetcher.py \
 
 ## Output layout
 
-Default output directory is `/home/elvar/Documents/School/Canvas`:
+Default output directory is `backup/` (unless overridden by `CANVAS_FETCHER_OUT_DIR` or `--out-dir`):
 
 ```text
-/home/elvar/Documents/School/Canvas/
+backup/
   run_summary.json
   <course_id>_<course_name>/
     manifest.json
@@ -162,6 +168,14 @@ Default output directory is `/home/elvar/Documents/School/Canvas`:
   "course_ids": ["10053", "12345"]
 }
 ```
+
+If you do not want `courses.json` in Git, keep your real file local and set:
+
+```bash
+CANVAS_FETCHER_SAVED_CONFIG="/absolute/path/to/courses.json"
+```
+
+(`courses.json` is gitignored in this project.)
 
 If `--saved-config` is a relative path, the script checks your current directory first, then the script directory.
 
