@@ -1,0 +1,7 @@
+{
+  "base_url": "https://<your-canvas-domain>",
+  "course_ids": [
+    "<course_id_1>",
+    "<course_id_2>"
+  ]
+}
