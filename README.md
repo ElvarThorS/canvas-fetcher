@@ -1,5 +1,7 @@
 # canvas-fetcher
 
+> Disclaimer: This project was mostly written with AI assistance.
+
 Simple Canvas LMS course backup script (read-only).
 
 ## What it fetches
